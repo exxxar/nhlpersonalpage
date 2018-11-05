@@ -27,6 +27,12 @@
         overflow-y:scroll;
     } 
 
+    .user-list .dashicons-email {
+      font-size: 20px;
+      vertical-align: middle;
+      color: #f44336;
+    }
+
     .user-list table {
       width:2000px;
     }
@@ -72,11 +78,55 @@
     visibility: visible;
     opacity: 1;
 }
+
+#small-chat ul {
+  width:100%;
+  height:300px;
+  overflow-y:scroll;
+
+}
+#small-chat ul li {
+    width: 100%;
+    /* margin: 0px; */
+    padding: 5px 5px 5px 10px;
+    box-sizing: border-box;
+    border-left: 2px #b71d12 solid;
+    position:relative;
+}
+
+#small-chat ul li p,
+#small-chat ul li h6  {
+  word-break: break-all;
+}
+
+#small-chat ul li h6 span {
+  font-size: 10px;
+    font-style: italic;
+    margin-right:20px;
+}
+
+#small-chat ul li:after {
+  content: ' Сообщение ' attr(to);
+    position: absolute;
+    top: -4px;
+    left: 10px;
+    color: #b71d12;
+    font-weight: 600;
+    font-size: 12px;
+    /* border: 1px red solid; */
+    padding: 2px;
+
+
+}
 </style>
 <body>
     
     <h3>Список пользователей</h3>
-    <a class="btn-floating btn-large waves-effect waves-light red modal-trigger" href="#userModal"><i class="material-icons">add</i></a>
+    <div class="row">
+      <div class="col s1"><a class="btn-floating btn-large waves-effect waves-light red modal-trigger load-users" href="#userModal"><i class="material-icons">add</i></a></div>
+      <div class="col s3"><a  class="waves-effect  btn-large modal-trigger open-chat" href="#chatModal">Написать пользователям</a></div>
+    </div>
+    
     <div class="user-list">
         <table>
             <thead>
@@ -103,20 +153,23 @@
                   foreach($query as $q) {                
                     ?>
                 <tr>
-                    <td> <a class="load-user-info-data" data-id="<?php echo $q->id;?>"><?php echo $q->name;?></a></td>
-                    <td><?php echo $q->hut_command;?></td>
-                    <td><?php echo $q->email;?></td>
-                    <td><?php echo $q->vk;?></td>
-                    <td><?php echo $q->fb;?></td>
-                    <td><?php echo $q->telegramm;?></td>                    
-                    <td><?php echo $q->viber;?></td>
-                    <td><?php echo $q->whatsapp;?></td>
-                    <td><?php echo $q->skype;?></td>
-                    <td><?php echo $q->payment_type;?></td>
-                    <td><?php echo $q->payment_card;?></td>
-                    <td><?php echo $q->exp;?></td>
-                    <td><?php echo $q->img;?></td>
-                    <td><?php echo $q->referal;?></td>               
+                    <td> <a class="load-user-info-data" data-id="<?php echo $q->id;?>"><?php echo $q->name;?></a>
+                    <a class="send-message-to modal-trigger" data-id="<?php echo $q->id;?>" href="#chatModal"><span class="dashicons dashicons-email"></span></a>
+                    <a class="send-message-to modal-trigger" data-id="<?php echo $q->id;?>" href="#payhistoryModal"><span class="dashicons dashicons-dashboard"></span></a>
+                    </td>
+                    <td><?php echo trim($q->hut_command)==""?"не заполнено":$q->hut_command;?></td>
+                    <td><?php echo trim($q->email)==""?"не заполнено":$q->email;?></td>
+                    <td><?php echo trim($q->vk)==""?"не заполнено":$q->vk?></td>
+                    <td><?php echo trim($q->fb)==""?"не заполнено":$q->fb;?></td>
+                    <td><?php echo trim($q->telegramm)==""?"не заполнено":$q->telegramm;?></td>                    
+                    <td><?php echo trim($q->viber)==""?"не заполнено":$q->viber;?></td>
+                    <td><?php echo trim($q->whatsapp)==""?"не заполнено":$q->whatsapp;?></td>
+                    <td><?php echo trim($q->skype)==""?"не заполнено":$q->skype;?></td>
+                    <td><?php echo trim($q->payment_type)==""?"не заполнено":$q->payment_type;?></td>
+                    <td><?php echo trim($q->payment_card)==""?"не заполнено":$q->payment_card;?></td>
+                    <td><?php echo trim($q->exp)==""?"не заполнено":$q->exp;?></td>
+                    <td><?php echo trim($q->img)==""?"не заполнено":$q->img;?></td>
+                    <td><?php echo trim($q->referal)==""?"не заполнено":$q->referal;?></td>               
                 </tr>
                 <?php
                 }
@@ -130,7 +183,7 @@
     <div class="row">
       <div class="col s2"> <a  class="waves-effect waves-light btn-large btn-promocode-all">Все промокоды</a></div>
       <div class="col s2"><a  class="waves-effect waves-light btn-large btn-promocode-active">Активные промокоды</a></div>
-      <div class="col s2"><a class="btn-floating btn-large waves-effect waves-light red modal-trigger add-new-promo" href="#promoModal"><i class="material-icons">add</i></a></div>
+      <div class="col s2"><a class="btn-floating btn-large waves-effect  red modal-trigger add-new-promo" href="#promoModal"><i class="material-icons">add</i></a></div>
     </div>
    
     
@@ -172,7 +225,7 @@
                     <div class="tooltip">
                       <a class="to-clipboard"> 
                           <span class="tooltiptext">Копировать в буфер</span>
-                          <?php echo $q->promocode;?>
+                          <p><?php echo $q->promocode;?></p>
                         </a>
                     </div> 
                     
@@ -246,6 +299,52 @@
     </table>
 
     </form>
+
+
+       <!-- Modal Structure -->
+    <div id="chatModal" class="modal">
+    <div class="modal-content">
+      <h4>Сообщение пользователю</h4>
+      <form id="chat_form" class="row"> 
+      <div class="col s6" id="small-chat">
+        <ul>
+          <li to="Vasya">            
+            <h6> <span>[02-03-2018 17:33]</span> Заголовок</h6>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio magni recusandae perferendis hic praesentium animi reprehenderit necessitatibus molestias, ratione consequatur. Optio consectetur nesciunt ducimus a dolorum suscipit eius ratione cumque.</p>
+          </li>
+        </ul>
+      </div>  
+      <div class="col s6">
+        <div class="row">
+          <div class="input-field col s12">
+              <select name="chat_message_to" id="chat_message_to">
+                    <option value="0">Всем пользователям</option>                 
+              </select>  
+              <label for="chat_message_to">Выберите пользователя</label>
+          </div>
+      </div> 
+          <div class="row">
+              <div class="input-field col s12">
+                <input type="text" id="chat_title" name="chat_title" value="">              
+                <label for="chat_title">Заголовок</label>
+              </div>                 
+          </div>    
+          <div class="row">
+              <div class="input-field col s12">
+                <textarea id="chat_message" class="materialize-textarea" name="chat_message" ></textarea>         
+                <label for="chat_message">Сообщение пользователю</label>
+              </div>                 
+          </div> 
+        
+        </div>
+       
+      </form>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="btn waves-effect waves-light btn-chat">Отправить</a>
+    </div>
+  </div>
+
    <!-- Modal Structure -->
   <div id="addLevel" class="modal">
     <div class="modal-content">
@@ -293,6 +392,8 @@
       </ul>
     </div>
   </div>
+
+
 
     <!-- Modal Structure -->
     <div id="promoModal" class="modal">
@@ -466,9 +567,22 @@
             </form>
             
           </div>
-          <hr>
-          <!-- История оплаты пользователя -->
-          <h3>История оплаты</h3>
+         
+          </div>
+          
+
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close btn waves-effect waves-ligh red">Сохранить изменения</a>
+    </div>
+  </div>
+
+
+
+    <!-- Modal Structure -->
+    <div id="payhistoryModal" class="modal">
+    <div class="modal-content">
+      <h4>Информация о платежах пользователя</h4>
           <div class="user-history">
           <table>
             <thead>
@@ -494,38 +608,20 @@
                   ?>
             </tbody>
             </table>
-          </div>
-          <hr>
-          <!-- Личные сообщения пользователю  -->
-          <h3>Сообщение пользователю</h3>
-          <div class="row">
-            <form class="col s12">
-              <div class="row">
-                <div class="input-field col s6">
-                    <input  id="title" type="text" class="validate">
-                    <label for="title">Заголовок</label>
-                  </div>
-                  
-              </div>
-              <div class="row">
-                <div class="input-field col s12">
-                   <textarea name="message" id="message" class="materialize-textarea" data-length="250"></textarea>
-                    <label for="message">Сообщение</label>
-                  </div>                  
-              </div>
 
-              <div class="row">
-                <button class="btn waves-effect waves-light" type="submit" name="action">Отправить</button>
-              </div>
-
-            </form>
-          </div>        
+     
+          
 
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-close btn waves-effect waves-ligh red">Сохранить изменения</a>
     </div>
   </div>
+
+
+
+
+
   <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
   integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -539,11 +635,177 @@
           format:'yyyy-mm-dd'
         });
 
+        $(".load-users").click(function(){
+
+          $("#assign_user").empty();
+          $.post("<?php echo plugin_dir_url( __FILE__ ).'usersHandler.php';?>",{
+            option:"getallusers"
+          }).done(function( data ) {
+            var json = $.parseJSON( data );
+            console.log(json);
+             for(var u in json){  
+               console.log(u);
+              var o = $("<option>");
+              o.val(json[u].ID);
+              o.text(json[u].user_nicename);
+              $("#assign_user").append(o);
+             }
+             $('select').formSelect();
+          });
+        });
+
+       
+
+        $(".send-message-to").click(function(){
+            var _id = $(this).attr("data-id");
+            $("#chat_message_to").empty();
+            $("#small-chat ul").empty();
+
+             $.post("<?php echo plugin_dir_url( __FILE__ ).'chatHandler.php';?>",{
+              option:"getmessages",
+              id:_id
+            }).done(function( data ) {
+              var json = $.parseJSON( data );
+              
+              var currentUserId = <?php echo get_current_user_id();?>;
+              for(var u in json){  
+              
+                var li = $("<li>"), h6 = $("<h6>"), p = $("<p>"), span = $("<span>");
+
+                h6.html(json[u].title);
+                span.html("["+json[u].date+"]");
+                h6.prepend(span);
+                p.html(json[u].message);
+                li.append(h6);
+                li.append(p);
+               
+               if (json[u].from_id!=json[u].to_id) {
+                  if (currentUserId==json[u].from_id) 
+                      li.attr({"to":json[u].user_nicename});
+                  else
+                      li.css({"border-left":"1px green solid"});
+               }                   
+              
+                $("#small-chat ul").prepend(li);
+              }
+
+            });
+
+            $.post("<?php echo plugin_dir_url( __FILE__ ).'usersHandler.php';?>",{
+            option:"getuser",
+            id:_id
+          }).done(function( data ) {
+                 var json = $.parseJSON( data );
+            console.log(json);
+             for(var u in json){  
+               console.log(u);
+              var o = $("<option>");
+              o.val(json[u].userId);
+              o.text(json[u].name);
+              $("#chat_message_to").append(o);
+             }
+             $('select').formSelect();
+          });
+        });
+
+        $(".open-chat").click(function(){
+         
+          var optionItem = $("<option>");
+          optionItem.val("0");
+          optionItem.text("Все пользователи");
+          $("#chat_message_to").empty();
+          $("#small-chat ul").empty();
+          $("#chat_message_to").append(optionItem);
+
+          $.post("<?php echo plugin_dir_url( __FILE__ ).'chatHandler.php';?>",{
+            option:"getmessages"
+          }).done(function( data ) {
+            var json = $.parseJSON( data );
+            $("#small-chat ul").empty();
+            for(var u in json){  
+            
+              var li = $("<li>"), h6 = $("<h6>"), p = $("<p>"), span = $("<span>");
+
+              h6.html(json[u].title);
+              span.html("["+json[u].date+"]");
+              h6.prepend(span);
+              p.html(json[u].message);
+              li.append(h6);
+              li.append(p);
+              li.attr({"to":json[u].user_nicename});
+             
+              $("#small-chat ul").prepend(li);
+             }
+
+          });
+          
+          $.post("<?php echo plugin_dir_url( __FILE__ ).'chatHandler.php';?>",{
+            option:"getchatusers"
+          }).done(function( data ) {
+            var json = $.parseJSON( data );
+             for(var u in json){  
+              var o = $("<option>");
+              o.val(json[u].ID);
+              o.text(json[u].user_nicename);
+              $("#chat_message_to").append(o);
+             }
+             $('select').formSelect();
+          });
+
+        });
+
+
+        $(".btn-chat").click(function(){
+          console.log("отправляем данные");
+            var to = $("#chat_message_to").val();
+            var title = $("#chat_title").val();
+            var message = $("#chat_message").val();
+
+            $("#chat_form").trigger( 'reset' );
+
+            $.post("<?php echo plugin_dir_url( __FILE__ ).'chatHandler.php';?>",{
+            option:"send",
+            to_id:to,
+            title:title,
+            message:message
+          }).done(function( data ) {
+
+              $.post("<?php echo plugin_dir_url( __FILE__ ).'chatHandler.php';?>",{
+                option:"getmessages"
+              }).done(function( data ) {
+                var json = $.parseJSON( data );
+                $("#small-chat ul").empty();
+                var currentUserId = <?php echo get_current_user_id();?>;
+                for(var u in json){  
+                 
+                  var li = $("<li>"), h6 = $("<h6>"), p = $("<p>"), span = $("<span>");
+
+                  h6.html(json[u].title);
+                  span.html("["+json[u].date+"]");
+                  h6.prepend(span);
+                  p.html(json[u].message);
+                  li.append(h6);
+                  li.append(p);
+                  if (json[u].from_id!=json[u].to_id) {
+                    if (currentUserId==json[u].from_id) 
+                        li.attr({"to":json[u].user_nicename});
+                    else
+                        li.css({"border-left":"1px green solid"});
+                  }  
+                
+                  $("#small-chat ul").prepend(li);
+                }
+
+              });
+          });
+        });
+
+
         $(".to-clipboard").click(function(){
 
           var $temp = $("<input>");
           $("body").append($temp);
-          $temp.val($(this).text()).select();
+          $temp.val($(this).children("p").text()).select();
           document.execCommand("copy");
           $temp.remove();
 

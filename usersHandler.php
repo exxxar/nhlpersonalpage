@@ -7,8 +7,9 @@ global $wpdb;
 if (isset($_POST["option"])){
 $result = "";
     switch($_POST["option"]) {
+
         case "getallusers":            
-            $result = json_encode($wpdb->get_results( "SELECT * FROM `wp_user_info`" ));     
+        $result = json_encode ($wpdb->get_results("SELECT `user_login`,`user_nicename`,`user_email`,`ID`  FROM `wp_users`"));  
         break;
         case "getuser":
             $id = $_POST['id'];

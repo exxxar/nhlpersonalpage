@@ -84,25 +84,29 @@ function nhlpersonalpage_install(){
 			PRIMARY KEY (`id`)) {$charset_collate};";
 		dbDelta( $sql );
 
-		for ($i=0;$i<10;$i++) {
-			$userId = $i;
-            $name = "test";
-            $hut_command = "test command";
-            $email = "test email";
-            $vk = "vk";
-            $fb = "fb";
-			$telegramm = "telegramm";
-			$viber = "viber";
-			$skype = "skype";
-            $whatsapp = "whatsapp";
-            $payment_type = "p_t";
-            $payment_card = "p_c";
-            $exp = 1000;
-            $img = "img";
-            $referal = 1;
+		$tmp = $wpdb->get_results("SELECT `user_login`,`user_nicename`,`user_email`,`ID`  FROM `wp_users`");
 
-            $wpdb->query( "INSERT INTO `wp_user_info`( `userId`, `name`, `hut_command`, `email`, `vk`, `fb`, `telegramm`,`viber`,`skype`, `whatsapp`, `payment_type`, `payment_card`, `exp`, `img`, `referal`) VALUES ( '$userId', '$name', '$hut_command', '$email', '$vk', '$fb', '$telegramm','$viber','$skype', '$whatsapp', '$payment_type', '$payment_card', '$exp', '$img', '$referal')" );
+		foreach($tmp as $u) {
+			$userId = $u->ID;
+
+			$name = $u->user_nicename;
+            $hut_command = "";
+            $email = "";
+            $vk = "";
+            $fb = "";
+			$telegramm = "";
+			$viber = "";
+			$skype = "";
+            $whatsapp = "";
+            $payment_type = "";
+            $payment_card = "";
+            $exp = 0;
+            $img = "";
+			$referal = 0;
+			
+			$wpdb->query( "INSERT INTO `wp_user_info`( `userId`, `name`, `hut_command`, `email`, `vk`, `fb`, `telegramm`,`viber`,`skype`, `whatsapp`, `payment_type`, `payment_card`, `exp`, `img`, `referal`) VALUES ( '$userId', '$name', '$hut_command', '$email', '$vk', '$fb', '$telegramm','$viber','$skype', '$whatsapp', '$payment_type', '$payment_card', '$exp', '$img', '$referal')" );
 		}
+	
 	}
 
 	$table_name = $wpdb->get_blog_prefix() . 'levels';
