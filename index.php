@@ -577,8 +577,6 @@
     </div>
   </div>
 
-
-
     <!-- Modal Structure -->
     <div id="payhistoryModal" class="modal">
     <div class="modal-content">
@@ -589,7 +587,9 @@
                 <th>ID</th>
                 <th>Способ оплаты</th>
                 <th>Сумма</th>
-                <th>Баллы</th>                           
+                <th>Баллы</th>       
+                <th>Дата зачисления</th>    
+                                   
             </thead>
             <tbody>
             <?php 
@@ -601,7 +601,7 @@
                       <td>Банковская карта</td>
                       <td>200.00 руб.</td>
                       <td>200</td>                    
-                      
+                      <td>02-03-2018 22:30</td>    
                   </tr>
                   <?php
                   }
@@ -613,9 +613,7 @@
           
 
     </div>
-    <div class="modal-footer">
-      <a href="#!" class="modal-close btn waves-effect waves-ligh red">Сохранить изменения</a>
-    </div>
+   
   </div>
 
 

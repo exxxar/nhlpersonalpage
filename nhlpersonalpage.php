@@ -51,6 +51,11 @@ add_action("wp_head", "nhl_add_styles");
 
  }
 
+ function themeslug_enqueue_style() {
+	wp_enqueue_style( 'nhl_personal_page_style', plugins_url( '/css/style.css', __FILE__ ), false ); 
+  }
+  add_action( 'wp_enqueue_scripts', 'themeslug_enqueue_style' );
+
 
 function nhlpersonalpage_install(){
 
@@ -558,25 +563,81 @@ VK.Widgets.Group('vk_groups', {mode: 4, height: '525', color2: '333333', color3:
 	";
 	}
 
-add_shortcode( 'profile', 'personal_cabinet' );
+add_shortcode( 'wpum_profile', 'personal_cabinet' );
 
 function enterPromocode(){
-	$url =  plugin_dir_url( __FILE__ ).'promoHandler.php';
+	$url =  plugin_dir_url( __FILE__ ).'promocallback.php';
 	return "
-	<form action='$url' method=\"post\">
-		<input type=\"hidden\" name=\"option\" value=\"accept\">
-			<div class=\"row\">
-				<div class=\"input-field col s12\">
-						<input placeholder=\"Введите промокод!\" id=\"promocode\" name=\"promocode\" type=\"text\">
-						<label for=\"promocode\">Промокод</label>
-				</div>
-				<div class=\"input-field col s12\">
-						<input type=\"submit\" value=\"Отправить\">
-						
-				</div>
-			</div>
+	<form action='$url' method=\"post\" class=\"promo-form\">
+		<input type=\"hidden\" name=\"option\" value=\"accept\">		
+		<label for=\"promocode\">Промокод</label>	
+			<input placeholder=\"Введите промокод!\" id=\"promocode\" name=\"promocode\" type=\"text\">
+			
+
+			<input type=\"submit\" value=\"Отправить\">						
+				
+			
 		</form>
 			";
 }
 add_shortcode("promocode",'enterPromocode');
 
+
+ 
+function misha_render_login() {
+ 
+	// проверяем, если пользователь уже авторизован, то выводим соответствующее сообщение и ссылку "Выйти"
+	if ( is_user_logged_in() ) {
+		return sprintf( "Вы уже авторизованы на сайте. <a href='%s'>Выйти</a>.", wp_logout_url() );
+	}
+ 
+	// присваиваем содержимое формы переменной и затем возвращаем её, выводить через echo() мы не можем, так как это шорткод
+	$return = '<div class="login-form-container"><h2>Войти на сайт</h2>';
+ 
+	// если возникли какие-либо ошибки, отображаем их
+	if ( isset( $_REQUEST['errno'] ) ) {
+		$error_codes = explode( ',', $_REQUEST['errno'] );
+ 
+		foreach ( $error_codes as $error_code ) {
+			switch ( $error_code ) {
+				case 'empty_username':
+					$return .= '<p class="errno">Вы не забыли указать свой email/имя пользователя?</p>';
+					break;
+				case 'empty_password':
+					$return .= '<p class="errno">Пожалуйста, введите пароль.</p>';
+					break;
+				case 'invalid_username':
+					$return .= '<p class="errno">На сайте не найдено указанного пользователя.</p>';
+					break;
+				case 'incorrect_password':
+					$return .= sprintf( "<p class='errno'>Неверный пароль. <a href='%s'>Забыли</a>?</p>", wp_lostpassword_url() );
+					break;
+				case 'confirm':
+					$return .= '<p class="errno success">Инструкции по сбросу пароля отправлены на ваш email.</p>';
+					break;
+				case 'changed':
+					$return .= '<p class="errno success">Пароль успешно изменён.</p>';
+					break;
+				case 'expiredkey':
+				case 'invalidkey':
+					$retun .= '<p class="errno">Недействительный ключ.</p>';
+					break;
+			}
+		}
+	}
+ 
+	// используем wp_login_form() для вывода формы (но можете сделать это и на чистом HTML)
+	$return .= wp_login_form(
+		array(
+			'echo' => false, // не выводим, а возвращаем
+			'redirect' => site_url('/account/'), // куда редиректить пользователя после входа
+		)
+	);
+ 
+	$return .= '<a class="forgot-password" href="' . wp_lostpassword_url() . '">Забыли пароль</a></div>';
+ 
+	// и наконец возвращаем всё, что получилось
+	return $return;
+ 
+}
+add_shortcode( 'misha_custom_login', 'misha_render_login' );
